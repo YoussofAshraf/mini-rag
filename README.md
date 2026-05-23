@@ -22,7 +22,7 @@ cp .env.example .env
 set your environment variables in the `.env` file Like `OPEN_API_KEY` value
 
 
-## Running app
+## Running FastAPI Server
 
 ```bash
 uvicorn main:app --reload --host 0.0.0.0 --port 5000
