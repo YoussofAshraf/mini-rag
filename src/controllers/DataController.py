@@ -38,7 +38,7 @@ class DataController(BaseController):
 
         return True, ResponseSignal.FILE_UPLOAD_SUCCESS.value
     
-    def generate_unique_filename(self, original_filename: str, project_id: str) -> str:
+    def generate_unique_file_path(self, original_filename: str, project_id: str) -> str:
         """Generate a unique file path with a random prefix to prevent filename collisions.
 
         Args:
@@ -46,7 +46,7 @@ class DataController(BaseController):
             project_id (str): Unique identifier for the project directory.
 
         Returns:
-            str: Full file path with sanitized filename prefixed by random string (format: 'random_key_filename').
+            str: Full file path with sanitized filename prefixed by random string (format: 'random_key_filename') & file ID.
         """
         random_key = self.generate_random_string()  # Generate a random string of length 8
         project_path = ProjectController().Get_project_path(project_id=project_id)
@@ -66,7 +66,7 @@ class DataController(BaseController):
                 project_path,
                 random_key + "_" + clean_filename
             )
-        return new_file_path
+        return new_file_path, random_key + "_" + clean_filename
                 
         
         

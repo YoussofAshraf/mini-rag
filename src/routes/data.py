@@ -33,7 +33,7 @@ async def upload_data(
         app_settings (Settings): Application settings injected via dependency injection.
 
     Returns:
-        JSONResponse: Upload status with signal (success/failure) and validation result.
+        JSONResponse: Upload status with signal (success/failure) and file ID.
     """
 
     is_valid, result_signal = data_controller.Validate_uploaded_file(file)
@@ -44,12 +44,11 @@ async def upload_data(
         )
 
     project_dir_path = project_controller.Get_project_path(project_id)
-    file_path = data_controller.generate_unique_filename(
+    file_path,file_id = data_controller.generate_unique_path(
         original_filename=file.filename,
         project_id=project_id
-        
-    )   
-    
+    )
+
     try: 
         async with aiofiles.open(file_path, "wb") as f:
             while chunk := await file.read(app_settings.FILE_DEFAULT_CHUNK_SIZE):
@@ -64,5 +63,5 @@ async def upload_data(
         
     return JSONResponse(
         status_code=status.HTTP_200_OK,
-        content={"signal":  ResponseSignal.FILE_UPLOAD_SUCCESS.value},
+        content={"signal":  ResponseSignal.FILE_UPLOAD_SUCCESS.value, "file_id": file_id},
     )
