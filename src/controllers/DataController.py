@@ -3,13 +3,13 @@ import os
 from fastapi import UploadFile
 from models import ResponseSignal
 from .BaseController import BaseController
-from  .ProjectController import ProjectController
+from .ProjectController import ProjectController
 import regex as re
 
 
 class DataController(BaseController):
     """Controller for handling file uploads and validation in the RAG system.
-    
+
     Manages file validation (size and type checking), filename sanitization, and ensures
     unique filenames when storing uploaded documents for the RAG pipeline.
     """
@@ -17,7 +17,9 @@ class DataController(BaseController):
     def __init__(self):
         super().__init__()  # configure the env data from .env file using pydantic settings inherited from Base Controller
         self.size_scale = 1048576  # convert MB to bytes
-        project_controller = ProjectController()  # Initialize ProjectController to manage project directories
+        project_controller = (
+            ProjectController()
+        )  # Initialize ProjectController to manage project directories
 
     def Validate_uploaded_file(self, file: UploadFile):
         """Validate an uploaded file against configured size and type restrictions.
@@ -37,7 +39,7 @@ class DataController(BaseController):
             return False, ResponseSignal.FILE_TYPE_NOT_SUPPORTED.value
 
         return True, ResponseSignal.FILE_UPLOAD_SUCCESS.value
-    
+
     def generate_unique_file_path(self, original_filename: str, project_id: str) -> str:
         """Generate a unique file path with a random prefix to prevent filename collisions.
 
@@ -48,30 +50,24 @@ class DataController(BaseController):
         Returns:
             str: Full file path with sanitized filename prefixed by random string (format: 'random_key_filename') & file ID.
         """
-        random_key = self.generate_random_string()  # Generate a random string of length 8
+        random_key = (
+            self.generate_random_string()
+        )  # Generate a random string of length 8
         project_path = ProjectController().Get_project_path(project_id=project_id)
-        
-        clean_filename = self.get_clean_filename(
-            original_filename=original_filename
-            )
-        
-        new_file_path = os.path.join(
-            project_path,
-            random_key + "_" + clean_filename
-        )
-        
+
+        clean_filename = self.get_clean_filename(original_filename=original_filename)
+
+        new_file_path = os.path.join(project_path, random_key + "_" + clean_filename)
+
         while os.path.exists(new_file_path):
-            random_key = self.generate_random_string()  # Generate a new random string if the file already exists
+            random_key = (
+                self.generate_random_string()
+            )  # Generate a new random string if the file already exists
             new_file_path = os.path.join(
-                project_path,
-                random_key + "_" + clean_filename
+                project_path, random_key + "_" + clean_filename
             )
         return new_file_path, random_key + "_" + clean_filename
-                
-        
-        
-        
-        
+
     def get_clean_filename(self, original_filename: str) -> str:
         """Sanitize a filename by removing special characters and replacing spaces with underscores.
 
@@ -82,6 +78,8 @@ class DataController(BaseController):
             str: Cleaned filename containing only word characters (letters, digits, underscore) and dots.
         """
         # Remove any unwanted characters from the filename
-        clean_filename = re.sub(r'[^\w.]','', original_filename.strip())
-        clean_filename = clean_filename.replace(' ', '_')  # Replace spaces with underscores
+        clean_filename = re.sub(r"[^\w.]", "", original_filename.strip())
+        clean_filename = clean_filename.replace(
+            " ", "_"
+        )  # Replace spaces with underscores
         return clean_filename

@@ -3,10 +3,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     """Application configuration settings loaded from environment variables.
-    
+
     Stores API configuration, file upload constraints, and authentication keys
     using Pydantic's BaseSettings for environment variable validation and type safety.
     """
+
     APP_NAME: str
     APP_VERSION: str
     OPENAI_API_KEY: str
